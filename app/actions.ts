@@ -47,5 +47,5 @@ export async function OnboardingAction(
     },
   });
 
-  return redirect("/dashboard");
+  return redirect("/onboarding/grant-id");
 }
