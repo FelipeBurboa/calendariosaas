@@ -3,7 +3,11 @@
 import prisma from "./lib/db";
 import { requireUser } from "./lib/hooks";
 import { parseWithZod } from "@conform-to/zod";
-import { onboardingSchema, settingsSchema } from "./lib/zodSchemas";
+import {
+  eventTypeSchema,
+  onboardingSchema,
+  settingsSchema,
+} from "./lib/zodSchemas";
 import { SubmissionResult } from "@conform-to/react";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -14,6 +18,11 @@ export type OnboardingActionResult =
   | undefined;
 
 export type SettingsActionResult =
+  | SubmissionResult<string[]>
+  | { fields: { userName: { error: string } } }
+  | undefined;
+
+export type CreateEventTypeActionResult =
   | SubmissionResult<string[]>
   | { fields: { userName: { error: string } } }
   | undefined;
@@ -122,7 +131,7 @@ export async function SettingsAction(prevState: any, formData: FormData) {
 }
 
 export async function updateAvailability(formData: FormData) {
-  const session = await requireUser();
+  await requireUser();
 
   const rawData = Object.fromEntries(formData.entries());
 
@@ -158,4 +167,32 @@ export async function updateAvailability(formData: FormData) {
   } catch (error) {
     console.log("Ocurrio un error en updateAvailability", error);
   }
+}
+
+export async function CreateEventTypeAction(
+  prevState: any,
+  formData: FormData
+) {
+  const session = await requireUser();
+
+  const submission = parseWithZod(formData, {
+    schema: eventTypeSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  await prisma.eventType.create({
+    data: {
+      title: submission.value.title,
+      duration: submission.value.duration,
+      url: submission.value.url,
+      description: submission.value.description,
+      videoCallSoftware: submission.value.video,
+      userId: session.user?.id,
+    },
+  });
+
+  return redirect("/dashboard");
 }

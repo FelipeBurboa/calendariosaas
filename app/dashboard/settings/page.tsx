@@ -27,7 +27,7 @@ export default async function SettingsPage() {
   const data = await getData(session.user?.id as string);
 
   return (
-    <div className="mx-auto w-[300px] md:w-[500px]">
+    <div className="mx-auto w-[300px] md:w-[500px] h-full flex items-center justify-center">
       <SettingsForm
         fullName={data.name as string}
         email={data.email}

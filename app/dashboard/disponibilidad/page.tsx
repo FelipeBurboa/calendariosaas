@@ -62,11 +62,13 @@ export default async function DisponibilidadPage() {
   const session = await requireUser();
   const data = await getData(session.user?.id as string);
   return (
-    <div className="mx-auto w-[300px] md:w-[500px]">
+    <div className="mx-auto w-[300px] md:w-[500px] h-full flex items-center justify-center">
       <Card>
-        <CardHeader>
-          <CardTitle className="text-center">Disponibilidad</CardTitle>
-          <CardDescription className="text-center">
+        <CardHeader className="bg-gradient-to-r from-red-500 to-red-600">
+          <CardTitle className="text-center text-white">
+            Disponibilidad
+          </CardTitle>
+          <CardDescription className="text-center text-white">
             ¡Aqui podras manejar tu disponibilidad!
           </CardDescription>
         </CardHeader>

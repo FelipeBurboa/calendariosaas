@@ -56,9 +56,9 @@ export function SettingsForm({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-center">Settings</CardTitle>
-        <CardDescription className="text-center">
+      <CardHeader className="bg-gradient-to-r from-red-500 to-red-600">
+        <CardTitle className="text-center text-white">Settings</CardTitle>
+        <CardDescription className="text-center text-white">
           Aqui puedes cambiar tus settings
         </CardDescription>
       </CardHeader>
