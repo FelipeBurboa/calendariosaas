@@ -12,7 +12,6 @@ import Image from "next/image";
 import Logo from "@/public/logo.png";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { useFormState } from "react-dom";
 import { OnboardingAction, OnboardingActionResult } from "../actions";
 import { SubmissionResult, useForm } from "@conform-to/react";

@@ -13,3 +13,11 @@ export const onboardingSchema = z.object({
       message: "Solo letras, números y guiones estan permitidos",
     }),
 });
+
+export const settingsSchema = z.object({
+  fullName: z
+    .string({ required_error: "El nombre y apellido es requerido" })
+    .min(3, { message: "Mínimo 3 caracteres" })
+    .max(150, { message: "Máximo 150 caracteres" }),
+  profileImage: z.string({ required_error: "La imagen es requerida" }),
+});
