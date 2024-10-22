@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { SubmissionResult, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
@@ -34,6 +35,9 @@ import {
   CreateEventTypeActionResult,
 } from "@/app/actions";
 import { convertToSlug } from "@/app/lib/converttoslug";
+import Zoom from "@/public/zoom.svg";
+import GoogleMeet from "@/public/meet.png";
+import MicrosoftTeams from "@/public/teams.svg";
 
 type ServiceProviders = "Zoom Meeting" | "Google Meet" | "Microsoft Teams";
 
@@ -156,6 +160,7 @@ export default function NewEventPage() {
                     activePlatform === "Zoom Meeting" ? "secondary" : "outline"
                   }
                 >
+                  <Image src={Zoom} alt="Zoom Logo" className="size-5" />
                   Zoom
                 </Button>
                 <Button
@@ -166,6 +171,11 @@ export default function NewEventPage() {
                     activePlatform === "Google Meet" ? "secondary" : "outline"
                   }
                 >
+                  <Image
+                    src={GoogleMeet}
+                    alt="Google Meet Logo"
+                    className="size-5"
+                  />
                   Google Meet
                 </Button>
                 <Button
@@ -178,6 +188,11 @@ export default function NewEventPage() {
                       : "outline"
                   }
                 >
+                  <Image
+                    src={MicrosoftTeams}
+                    alt="Microsoft Teams Logo"
+                    className="size-5"
+                  />
                   Microsoft Teams
                 </Button>
               </ButtonGroup>
