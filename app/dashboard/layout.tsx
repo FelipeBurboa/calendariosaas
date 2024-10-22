@@ -147,8 +147,8 @@ export default async function DashboardLayout({
             {children}
           </main>
         </div>
-        <Toaster richColors closeButton />
       </div>
+      <Toaster richColors closeButton />
     </>
   );
 }
