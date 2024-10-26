@@ -1,6 +1,13 @@
 import prisma from "@/app/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { notFound } from "next/navigation";
+import Image from "next/image";
+import Zoom from "@/public/zoom.svg";
+import GoogleMeet from "@/public/meet.png";
+import MicrosoftTeams from "@/public/teams.svg";
+import { CalendarX2, Clock } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { RenderCalendar } from "@/app/components/bookingForm/RenderCalendar";
 
 async function getData(userName: string, eventUrl: string) {
   const data = await prisma.eventType.findFirst({
@@ -46,13 +53,6 @@ interface BookingPageProps {
   };
 }
 
-import Image from "next/image";
-import Zoom from "@/public/zoom.svg";
-import GoogleMeet from "@/public/meet.png";
-import MicrosoftTeams from "@/public/teams.svg";
-import { CalendarX2, Clock } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-
 export default async function BookingPage({ params }: BookingPageProps) {
   const data = await getData(params.username, params.eventUrl);
 
@@ -70,7 +70,7 @@ export default async function BookingPage({ params }: BookingPageProps) {
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">
       <Card className="max-w-[1000px] w-full mx-auto">
-        <CardContent className="p-5 md:grid md:grid-cols-[1fr,auto,1fr,auto,1fr]">
+        <CardContent className="p-5 md:grid md:grid-cols-[1fr,auto,1fr,auto,1fr] gap-4">
           <div>
             {data.User?.image ? (
               <img
@@ -114,7 +114,8 @@ export default async function BookingPage({ params }: BookingPageProps) {
               </p>
             </div>
           </div>
-          <Separator orientation="vertical" className="h-full w-[1px] mx-2" />
+          <Separator orientation="vertical" className="h-full w-[1px]" />
+          <RenderCalendar />
         </CardContent>
       </Card>
     </div>
