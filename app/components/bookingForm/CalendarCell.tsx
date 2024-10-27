@@ -13,24 +13,22 @@ interface CalendarCellProps {
   state: CalendarState;
   date: CalendarDate;
   currentMonth: CalendarDate;
+  isUnavailable?: boolean;
 }
 
-export function CalendarCell({ state, date, currentMonth }: CalendarCellProps) {
+export function CalendarCell({
+  state,
+  date,
+  currentMonth,
+  isUnavailable,
+}: CalendarCellProps) {
   let ref = useRef(null);
-  let {
-    cellProps,
-    buttonProps,
-    isSelected,
-    isOutsideVisibleRange,
-    isDisabled,
-    isUnavailable,
-    formattedDate,
-  } = useCalendarCell({ date }, state, ref);
-
+  let { cellProps, buttonProps, isSelected, isDisabled, formattedDate } =
+    useCalendarCell({ date }, state, ref);
   const { focusProps, isFocusVisible } = useFocusRing();
-
   const isDayToday = isToday(date, getLocalTimeZone());
   const isOutsideOfMonth = !isSameMonth(currentMonth, date);
+  const finallyIsDisabled = isDisabled || isUnavailable;
 
   return (
     <td
@@ -47,10 +45,10 @@ export function CalendarCell({ state, date, currentMonth }: CalendarCellProps) {
           className={cn(
             "size-full rounded-sm flex items-center justify-center text-sm font-semibold",
             isSelected ? "bg-primary text-white" : "",
-            !isSelected && !isDisabled
+            !isSelected && !finallyIsDisabled
               ? "bg-primary/30 hover:bg-primary/50"
               : "",
-            isDisabled
+            finallyIsDisabled
               ? "text-muted-foreground cursor-default bg-muted opacity-30"
               : ""
           )}

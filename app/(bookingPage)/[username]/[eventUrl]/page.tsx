@@ -8,6 +8,11 @@ import MicrosoftTeams from "@/public/teams.svg";
 import { CalendarX2, Clock } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { RenderCalendar } from "@/app/components/bookingForm/RenderCalendar";
+import { DateFormatter } from "@/app/components/DateFormatter";
+import { TimeTable } from "@/app/components/bookingForm/TimeTable";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/app/components/SubmitButtons";
 
 async function getData(userName: string, eventUrl: string) {
   const data = await prisma.eventType.findFirst({
@@ -51,10 +56,21 @@ interface BookingPageProps {
     username: string;
     eventUrl: string;
   };
+  searchParams: {
+    date?: string;
+    time?: string;
+  };
 }
 
-export default async function BookingPage({ params }: BookingPageProps) {
+export default async function BookingPage({
+  params,
+  searchParams,
+}: BookingPageProps) {
   const data = await getData(params.username, params.eventUrl);
+
+  const selectedDate = searchParams.date
+    ? new Date(searchParams.date + "T12:00:00")
+    : new Date();
 
   const handleLogo = (videoCallSoftware: string) => {
     switch (videoCallSoftware) {
@@ -67,57 +83,140 @@ export default async function BookingPage({ params }: BookingPageProps) {
     }
   };
 
+  const showForm = !!searchParams.date && !!searchParams.time;
+
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">
-      <Card className="max-w-[1000px] w-full mx-auto">
-        <CardContent className="p-5 md:grid md:grid-cols-[1fr,auto,1fr,auto,1fr] gap-4">
-          <div>
-            {data.User?.image ? (
-              <img
-                src={data.User?.image as string}
-                alt={data.User?.name || ""}
-                className="size-10 rounded-full"
-              />
-            ) : (
-              <p className="size-10 rounded-full bg-gray-200"></p>
-            )}
-            <p className="text-sm font-medium text-muted-foreground mt-2">
-              {data.User?.name}
-            </p>
-            <h1 className="text-xl font-semibold mt-2">{data.title}</h1>
-            <p className="text-sm font-medium text-muted-foreground mt-2">
-              {data.description}
-            </p>
-            <div className="mt-5 flex flex-col gap-y-3">
-              <p className="flex items-center gap-x-2">
-                <CalendarX2 className="size-4 mr-2 text-primary" />
-                <span className="text-sm font-medium text-muted-foreground">
-                  23. Fake 2024
-                </span>
-              </p>
-              <p className="flex items-center gap-x-2">
-                <Clock className="size-4 mr-2 text-primary" />
-                <span className="text-sm font-medium text-muted-foreground">
-                  Reunion de{" "}
-                  {data.duration === 60 ? "1 hora" : `${data.duration} minutos`}
-                </span>
-              </p>
-              <p className="flex gap-x-2 items-center">
-                <Image
-                  src={handleLogo(data.videoCallSoftware)}
-                  alt="Zoom Logo"
-                  className="size-4 mr-2"
+      {showForm ? (
+        <Card className="max-w-[700px] w-full">
+          <CardContent className="p-5 md:grid md:grid-cols-[1fr,auto,1fr] gap-4">
+            <div>
+              {data.User?.image ? (
+                <img
+                  src={data.User?.image as string}
+                  alt={data.User?.name || ""}
+                  className="size-10 rounded-full"
                 />
-                <span className="text-sm font-medium text-muted-foreground">
-                  {data.videoCallSoftware}
-                </span>
+              ) : (
+                <p className="size-10 rounded-full bg-gray-200"></p>
+              )}
+              <p className="text-sm font-medium text-muted-foreground mt-2">
+                {data.User?.name}
               </p>
+              <h1 className="text-xl font-semibold mt-2">{data.title}</h1>
+              <p className="text-sm font-medium text-muted-foreground mt-2">
+                {data.description}
+              </p>
+              <div className="mt-5 flex flex-col gap-y-3">
+                <p className="flex items-center gap-x-2">
+                  <CalendarX2 className="size-4 mr-2 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    <DateFormatter date={selectedDate} />
+                  </span>
+                </p>
+                <p className="flex items-center gap-x-2">
+                  <Clock className="size-4 mr-2 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Reunion de{" "}
+                    {data.duration === 60
+                      ? "1 hora"
+                      : `${data.duration} minutos`}
+                  </span>
+                </p>
+                <p className="flex gap-x-2 items-center">
+                  <Image
+                    src={handleLogo(data.videoCallSoftware)}
+                    alt="Zoom Logo"
+                    className="size-4 mr-2"
+                  />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {data.videoCallSoftware}
+                  </span>
+                </p>
+              </div>
             </div>
-          </div>
-          <Separator orientation="vertical" className="h-full w-[1px]" />
-          <RenderCalendar />
-        </CardContent>
-      </Card>
+            <Separator orientation="vertical" className="h-full w-[1px]" />
+
+            <form className="flex flex-col gap-y-4 mt-2">
+              <div className="flex flex-col gap-y-2">
+                <Label>Tu Nombre</Label>
+                <Input placeholder="Nombre Completo" name="name" type="text" />
+              </div>
+              <div className="flex flex-col gap-y-2">
+                <Label>Tu Email</Label>
+                <Input
+                  placeholder="ejemplo@email.com"
+                  name="email"
+                  type="text"
+                />
+              </div>
+              <SubmitButton
+                text="Reservar Reunión"
+                loaderText="Reservando..."
+                className="w-full mt-5"
+              />
+            </form>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="max-w-[1000px] w-full mx-auto">
+          <CardContent className="p-5 md:grid md:grid-cols-[1fr,auto,1fr,auto,1fr] gap-4">
+            <div>
+              {data.User?.image ? (
+                <img
+                  src={data.User?.image as string}
+                  alt={data.User?.name || ""}
+                  className="size-10 rounded-full"
+                />
+              ) : (
+                <p className="size-10 rounded-full bg-gray-200"></p>
+              )}
+              <p className="text-sm font-medium text-muted-foreground mt-2">
+                {data.User?.name}
+              </p>
+              <h1 className="text-xl font-semibold mt-2">{data.title}</h1>
+              <p className="text-sm font-medium text-muted-foreground mt-2">
+                {data.description}
+              </p>
+              <div className="mt-5 flex flex-col gap-y-3">
+                <p className="flex items-center gap-x-2">
+                  <CalendarX2 className="size-4 mr-2 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    <DateFormatter date={selectedDate} />
+                  </span>
+                </p>
+                <p className="flex items-center gap-x-2">
+                  <Clock className="size-4 mr-2 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Reunion de{" "}
+                    {data.duration === 60
+                      ? "1 hora"
+                      : `${data.duration} minutos`}
+                  </span>
+                </p>
+                <p className="flex gap-x-2 items-center">
+                  <Image
+                    src={handleLogo(data.videoCallSoftware)}
+                    alt="Zoom Logo"
+                    className="size-4 mr-2"
+                  />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {data.videoCallSoftware}
+                  </span>
+                </p>
+              </div>
+            </div>
+            <Separator orientation="vertical" className="h-full w-[1px]" />
+            <RenderCalendar availability={data.User?.availability as any} />
+            <Separator orientation="vertical" className="h-full w-[1px]" />
+            <TimeTable
+              selectedDate={selectedDate}
+              userName={params.username}
+              duration={data.duration}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

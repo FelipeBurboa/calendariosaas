@@ -6,13 +6,19 @@ import {
 } from "@internationalized/date";
 import { type CalendarState } from "react-stately";
 import { CalendarCell } from "./CalendarCell";
+import { DateValue } from "@react-types/calendar";
 
 interface CalendarGridProps {
   state: CalendarState;
   offset?: DateDuration;
+  isDateUnavailable?: (date: DateValue) => boolean;
 }
 
-export function CalendarGrid({ state, offset = {} }: CalendarGridProps) {
+export function CalendarGrid({
+  state,
+  offset = {},
+  isDateUnavailable,
+}: CalendarGridProps) {
   const startDate = state.visibleRange.start.add(offset);
   const endDate = endOfMonth(startDate);
   let { locale } = useLocale();
@@ -49,6 +55,7 @@ export function CalendarGrid({ state, offset = {} }: CalendarGridProps) {
                     state={state}
                     date={date}
                     currentMonth={startDate}
+                    isUnavailable={isDateUnavailable?.(date)}
                   />
                 ) : (
                   <td key={i} />
