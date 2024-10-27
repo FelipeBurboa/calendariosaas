@@ -181,6 +181,7 @@ export default function NewEventPage() {
                 <Button
                   type="button"
                   onClick={() => setActivePlatform("Microsoft Teams")}
+                  disabled
                   className="w-full"
                   variant={
                     activePlatform === "Microsoft Teams"

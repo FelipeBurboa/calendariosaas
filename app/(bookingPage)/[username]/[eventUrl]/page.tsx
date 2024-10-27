@@ -13,6 +13,7 @@ import { TimeTable } from "@/app/components/bookingForm/TimeTable";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/app/components/SubmitButtons";
+import { CreateMeetingAction } from "@/app/actions";
 
 async function getData(userName: string, eventUrl: string) {
   const data = await prisma.eventType.findFirst({
@@ -137,7 +138,20 @@ export default async function BookingPage({
             </div>
             <Separator orientation="vertical" className="h-full w-[1px]" />
 
-            <form className="flex flex-col gap-y-4 mt-2">
+            <form
+              className="flex flex-col gap-y-4 mt-2"
+              action={CreateMeetingAction}
+            >
+              <input type="hidden" name="fromTime" value={searchParams.time} />
+              <input type="hidden" name="eventDate" value={searchParams.date} />
+              <input type="hidden" name="meetingLength" value={data.duration} />
+              <input
+                type="hidden"
+                name="provider"
+                value={data.videoCallSoftware}
+              />
+              <input type="hidden" name="eventTypeId" value={data.id} />
+              <input type="hidden" name="userName" value={params.username} />
               <div className="flex flex-col gap-y-2">
                 <Label>Tu Nombre</Label>
                 <Input placeholder="Nombre Completo" name="name" type="text" />

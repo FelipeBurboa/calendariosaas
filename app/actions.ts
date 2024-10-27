@@ -11,6 +11,7 @@ import {
 import { SubmissionResult } from "@conform-to/react";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { nylas } from "./lib/nylas";
 
 export type OnboardingActionResult =
   | SubmissionResult<string[]>
@@ -195,4 +196,66 @@ export async function CreateEventTypeAction(
   });
 
   return redirect("/dashboard");
+}
+
+export async function CreateMeetingAction(formData: FormData) {
+  const getUserData = await prisma.user.findUnique({
+    where: {
+      userName: formData.get("userName") as string,
+    },
+    select: {
+      grantEmail: true,
+      grantId: true,
+    },
+  });
+
+  if (!getUserData) {
+    throw new Error("No se encontro el usuario");
+  }
+
+  const eventTypeData = await prisma.eventType.findUnique({
+    where: {
+      id: formData.get("eventTypeId") as string,
+    },
+    select: {
+      title: true,
+      description: true,
+    },
+  });
+
+  const meetingLength = Number(formData.get("meetingLength"));
+  const provider = formData.get("provider") as string;
+  const fromTime = formData.get("fromTime") as string;
+  const eventDate = formData.get("eventDate") as string;
+  const startDateTime = new Date(`${eventDate}T${fromTime}:00`);
+  const endDateTime = new Date(startDateTime.getTime() + meetingLength * 60000);
+
+  await nylas.events.create({
+    identifier: getUserData.grantId as string,
+    requestBody: {
+      title: eventTypeData?.title as string,
+      description: eventTypeData?.description as string,
+      when: {
+        startTime: Math.floor(startDateTime.getTime() / 1000),
+        endTime: Math.floor(endDateTime.getTime() / 1000),
+      },
+      conferencing: {
+        autocreate: {},
+        provider: provider as any,
+      },
+      participants: [
+        {
+          name: formData.get("name") as string,
+          email: formData.get("email") as string,
+          status: "yes",
+        },
+      ],
+    },
+    queryParams: {
+      calendarId: getUserData.grantEmail as string,
+      notifyParticipants: true,
+    },
+  });
+
+  return redirect("/success");
 }
