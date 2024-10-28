@@ -23,7 +23,6 @@ export function DateFormatter({ date }: DateFormatterProps) {
       .replace(/de \w+$/, (m) =>
         m.replace(/\w+$/, (w) => w[0].toUpperCase() + w.slice(1))
       );
-    console.log(formatted);
     setFormattedDate(formatted);
   }, [date]);
 

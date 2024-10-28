@@ -31,7 +31,7 @@ export const dashboardLinks: NavbarProps[] = [
   {
     id: 1,
     name: "Reuniones",
-    href: "/dashboard/reuniones",
+    href: "/dashboard/meetings",
     icon: Users2,
   },
   {

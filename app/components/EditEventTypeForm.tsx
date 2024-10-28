@@ -30,25 +30,39 @@ import { SubmissionResult, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { eventTypeSchema } from "@/app/lib/zodSchemas";
 import { useFormState } from "react-dom";
-import {
-  CreateEventTypeAction,
-  CreateEventTypeActionResult,
-} from "@/app/actions";
+import { EditEventTypeAction, EditEventTypeActionResult } from "@/app/actions";
 import { convertToSlug } from "@/app/lib/converttoslug";
 import Zoom from "@/public/zoom.svg";
 import GoogleMeet from "@/public/meet.png";
 import MicrosoftTeams from "@/public/teams.svg";
 
+interface EditEventTypeFormProps {
+  id: string;
+  title: string;
+  url: string;
+  description: string;
+  duration: number;
+  callProvider: string;
+}
+
 type ServiceProviders = "Zoom Meeting" | "Google Meet" | "Microsoft Teams";
 
-export default function NewEventPage() {
-  const [activePlatform, setActivePlatform] =
-    useState<ServiceProviders>("Google Meet");
+export function EditEventTypeForm({
+  id,
+  title,
+  url,
+  description,
+  duration,
+  callProvider,
+}: EditEventTypeFormProps) {
+  const [activePlatform, setActivePlatform] = useState<ServiceProviders>(
+    callProvider as ServiceProviders
+  );
 
   const [lastResult, action] = useFormState<
-    CreateEventTypeActionResult,
+    EditEventTypeActionResult,
     FormData
-  >(CreateEventTypeAction, undefined);
+  >(EditEventTypeAction, undefined);
 
   const [form, fields] = useForm({
     lastResult: lastResult as SubmissionResult<string[]> | undefined,
@@ -66,26 +80,26 @@ export default function NewEventPage() {
     const slugValue = convertToSlug(value);
     e.target.value = slugValue;
   };
-
   return (
     <div className="w-full h-full flex flex-1 items-center justify-center">
       <Card>
         <CardHeader className="bg-gradient-to-r from-red-500 to-red-600">
           <CardTitle className="text-center text-white">
-            Crea tu nuevo evento
+            Editar tu evento
           </CardTitle>
           <CardDescription className="text-center text-white">
-            Genera un evento para que otros puedan organizar reuniones contigo
+            Edita tu evento para que otros puedan organizar reuniones contigo
           </CardDescription>
         </CardHeader>
         <div className="h-[1px] bg-muted rounded-full w-full mb-4"></div>
         <form id={form.id} onSubmit={form.onSubmit} action={action} noValidate>
+          <input type="hidden" name="id" value={id} />
           <CardContent className="grid gap-y-5">
             <div className="flex flex-col gap-y-2">
               <Label>Titulo</Label>
               <Input
                 name={fields.title.name}
-                defaultValue={fields.title.initialValue as string}
+                defaultValue={title}
                 key={fields.title.key}
                 type="text"
                 placeholder="Reunion de 30 minutos"
@@ -101,7 +115,7 @@ export default function NewEventPage() {
                 <Input
                   type="text"
                   name={fields.url.name}
-                  defaultValue={fields.url.initialValue as string}
+                  defaultValue={url}
                   key={fields.url.key}
                   className="rounded-l-none"
                   placeholder="reunion-de-30"
@@ -115,7 +129,7 @@ export default function NewEventPage() {
               <Textarea
                 placeholder="Tendremos una reunion de 30 minutos para hablar sobre el proyecto"
                 name={fields.description.name}
-                defaultValue={fields.description.initialValue as string}
+                defaultValue={description}
                 key={fields.description.key}
               />
               <p className="text-sm text-red-500">
@@ -126,7 +140,7 @@ export default function NewEventPage() {
               <Label>Duracion</Label>
               <Select
                 name={fields.duration.name}
-                defaultValue={fields.duration.initialValue as string}
+                defaultValue={String(duration)}
                 key={fields.duration.key}
               >
                 <SelectTrigger>
@@ -179,22 +193,22 @@ export default function NewEventPage() {
                   Google Meet
                 </Button>
                 {/*    <Button
-                  type="button"
-                  onClick={() => setActivePlatform("Microsoft Teams")}
-                  className="w-full"
-                  variant={
-                    activePlatform === "Microsoft Teams"
-                      ? "secondary"
-                      : "outline"
-                  }
-                >
-                  <Image
-                    src={MicrosoftTeams}
-                    alt="Microsoft Teams Logo"
-                    className="size-5"
-                  />
-                  Microsoft Teams
-                </Button> */}
+                      type="button"
+                      onClick={() => setActivePlatform("Microsoft Teams")}
+                      className="w-full"
+                      variant={
+                        activePlatform === "Microsoft Teams"
+                          ? "secondary"
+                          : "outline"
+                      }
+                    >
+                      <Image
+                        src={MicrosoftTeams}
+                        alt="Microsoft Teams Logo"
+                        className="size-5"
+                      />
+                      Microsoft Teams
+                    </Button> */}
               </ButtonGroup>
             </div>
           </CardContent>
@@ -202,7 +216,7 @@ export default function NewEventPage() {
             <Button variant="secondary" asChild>
               <Link href={"/dashboard"}>Cancelar</Link>
             </Button>
-            <SubmitButton text="Generar Evento" loaderText="Generando..." />
+            <SubmitButton text="Editar Evento" loaderText="Editando..." />
           </CardFooter>
         </form>
       </Card>

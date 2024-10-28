@@ -4,15 +4,7 @@ import { requireUser } from "../lib/hooks";
 import { EmptyState } from "../components/EmptyState";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-  ExternalLink,
-  Link2,
-  Pen,
-  Settings,
-  Trash,
-  Users2,
-} from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { ExternalLink, Pen, Settings, Users2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +18,9 @@ import Image from "next/image";
 import Zoom from "@/public/zoom.svg";
 import GoogleMeet from "@/public/meet.png";
 import MicrosoftTeams from "@/public/teams.svg";
+import { CopyLinkMenu } from "../components/CopyLinkMenu";
+import { EventTypeSwitcher } from "../components/EventTypeSwitcher";
+import DeleteEventDialog from "../components/DeleteEventDialog";
 
 async function getData(userId: string) {
   const data = await prisma.user.findUnique({
@@ -42,6 +37,10 @@ async function getData(userId: string) {
           url: true,
           duration: true,
           videoCallSoftware: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
         },
       },
     },
@@ -117,26 +116,25 @@ export default async function DashboardPage() {
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
-                        <DropdownMenuItem asChild>
+                        <DropdownMenuItem asChild disabled={!event.active}>
                           <Link href={`/${data.userName}/${event.url}`}>
                             <ExternalLink className="size-4 mr-2" />
                             Ver
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Link2 className="size-4 mr-2" />
-                          Copiar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pen className="size-4 mr-2" />
-                          Editar
+                        <CopyLinkMenu
+                          meetingUrl={`${process.env.NEXT_PUBLIC_URL}/${data.userName}/${event.url}`}
+                          disabled={!event.active}
+                        />
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/event/${event.id}`}>
+                            <Pen className="size-4 mr-2" />
+                            Editar
+                          </Link>
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Trash className="size-4 mr-2" />
-                        Eliminar
-                      </DropdownMenuItem>
+                      <DeleteEventDialog eventId={event.id} />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -157,8 +155,15 @@ export default async function DashboardPage() {
                   </div>
                 </Link>
                 <div className="bg-primary/10 px-5 py-3 justify-between items-center flex mt-auto">
-                  <Switch />
-                  <Button>Editar Evento</Button>
+                  <EventTypeSwitcher
+                    initialChecked={event.active}
+                    eventTypeId={event.id}
+                  />
+                  <Button asChild>
+                    <Link href={`/dashboard/event/${event.id}`}>
+                      Editar Evento
+                    </Link>
+                  </Button>
                 </div>
               </div>
             ))}
