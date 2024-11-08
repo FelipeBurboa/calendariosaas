@@ -24,7 +24,7 @@ export function AuthModal() {
           <Image src={Logo} alt="logo" className="size-10" />
           <h4 className="text-3xl font-bold">
             <span className="bg-gradient-to-r from-red-500 via-orange-300 to-green-400 bg-[length:90%_4px] bg-no-repeat bg-bottom">
-              Calendario
+              Calendariooooo
             </span>
           </h4>
         </DialogHeader>
